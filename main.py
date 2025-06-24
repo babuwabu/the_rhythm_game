@@ -288,6 +288,22 @@ class AudioManager:
         special_sound.set_volume(self._sfx_volume)
         self._sounds['special'] = special_sound
     
+    def _generate_beep(self, frequency, duration):
+        """Generate a simple beep sound"""
+        import numpy as np
+        sample_rate = 22050
+        frames = int(duration * sample_rate)
+        arr = np.zeros((frames, 2), dtype=np.int16)
+        
+        # Generate sine wave
+        for i in range(frames):
+            sample = int(16384 * math.sin(2 * math.pi * frequency * i / sample_rate))
+            # Apply envelope to avoid clicks
+            envelope = min(1.0, i / (frames * 0.1), (frames - i) / (frames * 0.1))
+            sample = int(sample * envelope)
+            arr[i] = [sample, sample]
+        
+        return arr.tobytes()
 
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
