@@ -6,7 +6,7 @@ from enum import Enum
 
 # Initialize Pygame
 pygame.init()
-pygame.mixer.init()
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
 
 # Constants
 SCREEN_WIDTH = 800
@@ -241,6 +241,30 @@ class NoteFactory:
         else:
             return NoteFactory.create_note(NoteType.SPECIAL, lane, y)
         
+# ENCAPSULATION: AudioManager handles all sound effects and music
+class AudioManager:
+    """Manages all audio - background music and sound effects"""
+    def __init__(self):
+        self._sounds = {}
+        self._music_loaded = False
+        self._music_volume = 0.7
+        self._sfx_volume = 0.8
+        
+        # Load sound effects
+        self._load_sounds()
+    
+    def _load_sounds(self):
+        """Load all sound effects"""
+        try:
+            # Create simple sound effects using pygame's built-in sound generation
+            # In a real game, you'd load actual sound files here
+            self._create_hit_sounds()
+            print("Sound effects loaded successfully!")
+        except Exception as e:
+            print(f"Warning: Could not load sound effects: {e}")
+
+    
+
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
 class ScoreManager:
@@ -499,5 +523,34 @@ class RhythmGame:
             control_text = self.small_font.render(text, True, WHITE)
             self.screen.blit(control_text, (SCREEN_WIDTH - 200, 10 + i * 25))
 
+    def run(self):
+        """Main game loop"""
+        while self.running:
+            events = pygame.event.get()
+            keys_pressed = pygame.key.get_pressed()
+            
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.running = False
+            
+            # Handle input
+            self.handle_input(events, keys_pressed)
+            
+            # Update game
+            self.spawn_note()
+            self.update_notes()
+            
+            # Draw
+            self.draw()
+            self.clock.tick(FPS)
+        
+        pygame.quit()
 
+# Run the game
+if __name__ == "__main__":
+    game = RhythmGame()
+    game.run()
     
