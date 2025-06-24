@@ -29,3 +29,7 @@ class HitAccuracy(Enum):
     GOOD = "GOOD"
     MISS = "MISS"
 
+class NoteType(Enum):
+    NORMAL = "NORMAL"
+    HOLD = "HOLD"
+    SPECIAL = "SPECIAL"
