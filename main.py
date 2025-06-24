@@ -256,21 +256,26 @@ class AudioManager:
     
     def _load_sounds(self):
         """Load all sound effects"""
-    try:
+   
+    def _sounds(self):
+
         try:
-            self._sounds['perfect'] = pygame.mixer.Sound("perfect_hit.wav")
-            self._sounds['good'] = pygame.mixer.Sound("good_hit.wav")
-            self._sounds['miss'] = pygame.mixer.Sound("miss_sound.wav")
-            self._sounds['special'] = pygame.mixer.Sound("special_hit.wav")
-            print("Loaded WAV sound files successfully!")
-        except:
-            # If files don't exist, generate synthetic sounds
-            print("Sound files not found - generating synthetic sounds")
-            self._create_hit_sounds()
+            try:
+                self._sounds['perfect'] = pygame.mixer.Sound("perfect_hit.wav")
+                self._sounds['good'] = pygame.mixer.Sound("good_hit.wav")
+                self._sounds['miss'] = pygame.mixer.Sound("miss_sound.wav")
+                self._sounds['special'] = pygame.mixer.Sound("special_hit.wav")
+                print("Loaded WAV sound files successfully!")
+            except:
+                # If files don't exist, generate synthetic sounds
+                print("Sound files not found - generating synthetic sounds")
+                self._create_hit_sounds()
             
-    except Exception as e:
-        print(f"Sound initialization failed: {e}")
+        except Exception as e:
+            print(f"Sound initialization failed: {e}")
         # Create super basic fallback
+    
+    def _generate_beep(self, frequency, duration):
         self._sounds = {
             'perfect': pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1)),
             'good': pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1)),
@@ -278,23 +283,6 @@ class AudioManager:
             'special': pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
         }
 
-    for sound in self._sounds.values():
-        sound.set_volume(self._sfx_volume)
-
-    def _create_hit_sounds(self):
-        """Create simple hit sound effects"""
-        # Perfect hit sound (higher pitch)
-        self._sounds['perfect'] = pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1))
-        
-        # Good hit sound (medium pitch)
-        self._sounds['good'] = pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1))
-        
-        # Miss sound (lower pitch)
-        self._sounds['miss'] = pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2))
-        
-        # Special note sound (chord)
-        self._sounds['special'] = pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
-    
     def _generate_beep(self, frequency, duration):
         """Generate a simple beep sound"""
         sample_rate = 44100
@@ -328,6 +316,23 @@ class AudioManager:
             arr[i] = [sample, sample]
         
         return arr.tobytes()
+
+    def values(self):
+        sound.set_volume(self._sfx_volume)
+
+    def _create_hit_sounds(self):
+        """Create simple hit sound effects"""
+        # Perfect hit sound (higher pitch)
+        self._sounds['perfect'] = pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1))
+        
+        # Good hit sound (medium pitch)
+        self._sounds['good'] = pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1))
+        
+        # Miss sound (lower pitch)
+        self._sounds['miss'] = pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2))
+        
+        # Special note sound (chord)
+        self._sounds['special'] = pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
     
     def load_background_music(self, music_file):
         """Load background music file"""
@@ -475,6 +480,7 @@ class KeyboardInputHandler(InputHandler):
 class RhythmGame:
     """Main game class demonstrating all OOP principles"""
     def __init__(self):
+        self.running = True
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("OOP Rhythm Game - 4 Pillars Demo")
         
