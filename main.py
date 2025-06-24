@@ -385,4 +385,40 @@ class RhythmGame:
                     self.show_feedback("MISS", RED)
                 self.notes.remove(note)
 
+    def handle_input(self, events, keys_pressed):
+        """Handle player input"""
+        pressed_lanes, held_lanes = self.input_handler.handle_input(events, keys_pressed)
+        
+        # Handle pressed lanes
+        for lane in pressed_lanes:
+            self.check_hit(lane, False)
+        
+        # Handle held lanes for hold notes
+        for lane in held_lanes:
+            self.check_hit(lane, True)
     
+    def check_hit(self, lane, is_hold):
+        """Check if a note was hit in the specified lane"""
+        for note in self.notes:
+            if note.lane == lane and not note.hit:
+                distance = note.get_hit_zone_distance(self.hit_zone_y)
+                
+                # Different logic for hold notes
+                if isinstance(note, HoldNote):
+                    if is_hold and distance <= 30:
+                        note.being_held = True
+                        if not hasattr(note, '_hit_registered'):
+                            accuracy = note.calculate_accuracy(distance)
+                            self.score_manager.add_hit(accuracy, note.score_value)
+                            self.show_feedback(accuracy.value, self.get_accuracy_color(accuracy))
+                            note._hit_registered = True
+                else:
+                    # Normal and special notes
+                    if not is_hold and distance <= 40:
+                        accuracy = note.calculate_accuracy(distance)
+                        # POLYMORPHISM: Different note types have different score values
+                        self.score_manager.add_hit(accuracy, note.score_value)
+                        self.show_feedback(accuracy.value, self.get_accuracy_color(accuracy))
+                        note.hit = True
+                        break
+
