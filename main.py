@@ -324,6 +324,30 @@ class AudioManager:
         
         return arr.tobytes()
     
+    def load_background_music(self, music_file):
+        """Load background music file"""
+        try:
+            pygame.mixer.music.load(music_file)
+            pygame.mixer.music.set_volume(self._music_volume)
+            self._music_loaded = True
+            print(f"Background music loaded: {music_file}")
+        except Exception as e:
+            print(f"Warning: Could not load background music: {e}")
+            self._music_loaded = False
+    
+    def play_background_music(self, loops=-1):
+        """Play background music (loops=-1 means infinite loop)"""
+        if self._music_loaded:
+            try:
+                pygame.mixer.music.play(loops)
+                print("Background music started")
+            except Exception as e:
+                print(f"Warning: Could not play background music: {e}")
+    
+    def stop_background_music(self):
+        """Stop background music"""
+        pygame.mixer.music.stop()
+
     
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
