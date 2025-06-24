@@ -437,4 +437,37 @@ class RhythmGame:
         self.feedback_color = color
         self.feedback_timer = 60  # Show for 1 second at 60 FPS              
 
-      
+    def draw(self):
+        """Draw all game elements"""
+        self.screen.fill(BLACK)
+        
+        # Draw lanes
+        for i in range(4):
+            x = i * 150 + 100
+            pygame.draw.line(self.screen, WHITE, (x - 50, 0), (x - 50, SCREEN_HEIGHT), 2)
+            pygame.draw.line(self.screen, WHITE, (x + 50, 0), (x + 50, SCREEN_HEIGHT), 2)
+        
+        # Draw hit zone
+        pygame.draw.rect(self.screen, (50, 50, 50), 
+                        (50, self.hit_zone_y - 20, 500, 40))
+        pygame.draw.rect(self.screen, WHITE, 
+                        (50, self.hit_zone_y - 20, 500, 40), 2)
+        
+        # Draw notes - POLYMORPHISM: Each note type draws differently
+        for note in self.notes:
+            note.draw(self.screen)
+        
+        # Draw UI
+        self.draw_ui()
+        
+        # Draw feedback
+        if self.feedback_timer > 0:
+            text = self.font.render(self.feedback_text, True, self.feedback_color)
+            rect = text.get_rect(center=(SCREEN_WIDTH//2, 150))
+            self.screen.blit(text, rect)
+            self.feedback_timer -= 1
+        
+        pygame.display.flip()
+
+
+    
