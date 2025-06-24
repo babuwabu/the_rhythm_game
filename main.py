@@ -241,3 +241,29 @@ class NoteFactory:
         else:
             return NoteFactory.create_note(NoteType.SPECIAL, lane, y)
         
+
+# ENCAPSULATION: ScoreManager encapsulates scoring logic
+class ScoreManager:
+    """Manages scoring and statistics - demonstrates encapsulation"""
+    def __init__(self):
+        self.__score = 0  # ENCAPSULATION: Private attribute (name mangling)
+        self.__combo = 0
+        self.__max_combo = 0
+        self.__hits = {accuracy: 0 for accuracy in HitAccuracy}
+    
+    @property
+    def score(self):  # ENCAPSULATION: Read-only property
+        return self.__score
+    
+    @property
+    def combo(self):
+        return self.__combo
+    
+    @property
+    def max_combo(self):
+        return self.__max_combo
+    
+    @property
+    def hits(self):
+        return self.__hits.copy()  # Return copy to prevent external modification
+    
