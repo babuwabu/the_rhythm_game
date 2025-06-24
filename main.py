@@ -139,3 +139,41 @@ class NormalNote(Note):
     def score_value(self):
         return self._score_value
     
+    
+class HoldNote(Note):
+    """Hold note - must be held down"""
+    def __init__(self, lane, y=-20, duration=60):
+        super().__init__(lane, y)
+        self._color = (255, 150, 100)
+        self._duration = duration
+        self._hold_timer = 0
+        self._being_held = False
+        self._score_value = 200
+        self._height = 40  # Taller than normal notes
+    
+    @property
+    def score_value(self):
+        return self._score_value
+    
+    @property
+    def being_held(self):
+        return self._being_held
+    
+    @being_held.setter
+    def being_held(self, value):
+        self._being_held = value
+        if value:
+            self._hold_timer += 1
+    
+    def draw(self, screen):
+        """Override draw method for visual distinction"""
+        if not self._hit:
+            # Draw main body
+            pygame.draw.rect(screen, self._color, 
+                           (self.x - self._width//2, self.y, self._width, self._height))
+            # Draw hold indicator
+            pygame.draw.rect(screen, (255, 255, 0), 
+                           (self.x - self._width//2 + 5, self.y + 5, self._width - 10, self._height - 10))
+            pygame.draw.rect(screen, BLACK, 
+                           (self.x - self._width//2, self.y, self._width, self._height), 2)
+            
