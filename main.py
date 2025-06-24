@@ -305,6 +305,26 @@ class AudioManager:
         
         return arr.tobytes()
 
+    def _generate_chord(self, frequencies, duration):
+        """Generate a chord (multiple frequencies)"""
+        import numpy as np
+        sample_rate = 22050
+        frames = int(duration * sample_rate)
+        arr = np.zeros((frames, 2), dtype=np.int16)
+        
+        for i in range(frames):
+            sample = 0
+            for freq in frequencies:
+                sample += int(5000 * math.sin(2 * math.pi * freq * i / sample_rate))
+            
+            # Apply envelope
+            envelope = min(1.0, i / (frames * 0.1), (frames - i) / (frames * 0.1))
+            sample = int(sample * envelope)
+            arr[i] = [sample, sample]
+        
+        return arr.tobytes()
+    
+    
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
 class ScoreManager:
