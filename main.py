@@ -267,3 +267,24 @@ class ScoreManager:
     def hits(self):
         return self.__hits.copy()  # Return copy to prevent external modification
     
+    def add_hit(self, accuracy: HitAccuracy, base_score: int):
+        """Add a hit with given accuracy"""
+        self.__hits[accuracy] += 1
+        
+        if accuracy != HitAccuracy.MISS:
+            self.__combo += 1
+            self.__max_combo = max(self.__max_combo, self.__combo)
+            
+            # Calculate score with combo multiplier
+            multiplier = 1.0
+            if accuracy == HitAccuracy.PERFECT:
+                multiplier = 1.5
+            elif accuracy == HitAccuracy.GOOD:
+                multiplier = 1.0
+            
+            combo_bonus = min(self.__combo * 0.1, 2.0)  # Max 2x combo bonus
+            final_score = int(base_score * multiplier * (1 + combo_bonus))
+            self.__score += final_score
+        else:
+            self.__combo = 0
+
