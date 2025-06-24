@@ -363,3 +363,13 @@ class RhythmGame:
         
         self.running = True
 
+    def spawn_note(self):
+        """Spawn a new note using the factory pattern"""
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_note_time > self.note_interval:
+            lane = random.randint(0, 3)
+            # POLYMORPHISM: Factory creates different note types
+            note = NoteFactory.create_random_note(lane)
+            self.notes.append(note)
+            self.last_note_time = current_time
+
