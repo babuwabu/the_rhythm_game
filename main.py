@@ -469,5 +469,35 @@ class RhythmGame:
         
         pygame.display.flip()
 
+    def draw_ui(self):
+        """Draw user interface"""
+        # Score
+        score_text = self.font.render(f"Score: {self.score_manager.score}", True, WHITE)
+        self.screen.blit(score_text, (10, 10))
+        
+        # Combo
+        combo_text = self.font.render(f"Combo: {self.score_manager.combo}", True, WHITE)
+        self.screen.blit(combo_text, (10, 50))
+        
+        # Accuracy
+        accuracy = self.score_manager.get_accuracy_percentage()
+        accuracy_text = self.small_font.render(f"Accuracy: {accuracy:.1f}%", True, WHITE)
+        self.screen.blit(accuracy_text, (10, 90))
+        
+        # Hit statistics
+        hits = self.score_manager.hits
+        stats_y = 130
+        for accuracy, count in hits.items():
+            color = self.get_accuracy_color(accuracy)
+            stats_text = self.small_font.render(f"{accuracy.value}: {count}", True, color)
+            self.screen.blit(stats_text, (10, stats_y))
+            stats_y += 25
+        
+        # Controls
+        controls = ["Controls:", "D F J K", "Hold for long notes"]
+        for i, text in enumerate(controls):
+            control_text = self.small_font.render(text, True, WHITE)
+            self.screen.blit(control_text, (SCREEN_WIDTH - 200, 10 + i * 25))
+
 
     
