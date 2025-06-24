@@ -373,3 +373,16 @@ class RhythmGame:
             self.notes.append(note)
             self.last_note_time = current_time
 
+    def update_notes(self):
+        """Update all notes"""
+        for note in self.notes[:]:  # Create copy to avoid modification during iteration
+            note.update()  # POLYMORPHISM: Different note types update differently
+            
+            if note.is_off_screen():
+                if not note.hit:
+                    # Missed note
+                    self.score_manager.add_hit(HitAccuracy.MISS, 0)
+                    self.show_feedback("MISS", RED)
+                self.notes.remove(note)
+
+    
