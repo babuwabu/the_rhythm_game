@@ -263,6 +263,30 @@ class AudioManager:
         except Exception as e:
             print(f"Warning: Could not load sound effects: {e}")
 
+    def _create_hit_sounds(self):
+        """Create simple hit sound effects"""
+        # Create simple beep sounds for different hit types
+        # These are very basic - in a real game you'd use actual sound files
+        
+        # Perfect hit sound (higher pitch)
+        perfect_sound = pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1))
+        perfect_sound.set_volume(self._sfx_volume)
+        self._sounds['perfect'] = perfect_sound
+        
+        # Good hit sound (medium pitch)
+        good_sound = pygame.mixer.Sound(buffer=self._generate_beep(330, 0.1))
+        good_sound.set_volume(self._sfx_volume)
+        self._sounds['good'] = good_sound
+        
+        # Miss sound (lower pitch, different tone)
+        miss_sound = pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2))
+        miss_sound.set_volume(self._sfx_volume * 0.6)
+        self._sounds['miss'] = miss_sound
+        
+        # Special note sound (chord)
+        special_sound = pygame.mixer.Sound(buffer=self._generate_chord([440, 554, 659], 0.15))
+        special_sound.set_volume(self._sfx_volume)
+        self._sounds['special'] = special_sound
     
 
 
