@@ -1,12 +1,13 @@
 import pygame
 import random
 import math
+import numpy as np
 from abc import ABC, abstractmethod
 from enum import Enum
 
 # Initialize Pygame
 pygame.init()
-pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
 
 # Constants
 SCREEN_WIDTH = 800
@@ -247,8 +248,8 @@ class AudioManager:
     def __init__(self):
         self._sounds = {}
         self._music_loaded = False
-        self._music_volume = 0.7
-        self._sfx_volume = 0.8
+        self._music_volume = 0.5
+        self._sfx_volume = 0.7
         
         # Load sound effects
         self._load_sounds()
@@ -277,38 +278,29 @@ class AudioManager:
             'special': pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
         }
 
+    for sound in self._sounds.values():
+        sound.set_volume(self._sfx_volume)
+
     def _create_hit_sounds(self):
         """Create simple hit sound effects"""
-        # Create simple beep sounds for different hit types
-        # These are very basic - in a real game you'd use actual sound files
-        
         # Perfect hit sound (higher pitch)
-        perfect_sound = pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1))
-        perfect_sound.set_volume(self._sfx_volume)
-        self._sounds['perfect'] = perfect_sound
+        self._sounds['perfect'] = pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1))
         
         # Good hit sound (medium pitch)
-        good_sound = pygame.mixer.Sound(buffer=self._generate_beep(330, 0.1))
-        good_sound.set_volume(self._sfx_volume)
-        self._sounds['good'] = good_sound
+        self._sounds['good'] = pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1))
         
-        # Miss sound (lower pitch, different tone)
-        miss_sound = pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2))
-        miss_sound.set_volume(self._sfx_volume * 0.6)
-        self._sounds['miss'] = miss_sound
+        # Miss sound (lower pitch)
+        self._sounds['miss'] = pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2))
         
         # Special note sound (chord)
-        special_sound = pygame.mixer.Sound(buffer=self._generate_chord([440, 554, 659], 0.15))
-        special_sound.set_volume(self._sfx_volume)
-        self._sounds['special'] = special_sound
+        self._sounds['special'] = pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
     
     def _generate_beep(self, frequency, duration):
         """Generate a simple beep sound"""
-        import numpy as np
-        sample_rate = 22050
+        sample_rate = 44100
         frames = int(duration * sample_rate)
         arr = np.zeros((frames, 2), dtype=np.int16)
-        
+
         # Generate sine wave
         for i in range(frames):
             sample = int(16384 * math.sin(2 * math.pi * frequency * i / sample_rate))
@@ -321,8 +313,7 @@ class AudioManager:
 
     def _generate_chord(self, frequencies, duration):
         """Generate a chord (multiple frequencies)"""
-        import numpy as np
-        sample_rate = 22050
+        sample_rate = 44100
         frames = int(duration * sample_rate)
         arr = np.zeros((frames, 2), dtype=np.int16)
         
@@ -366,18 +357,16 @@ class AudioManager:
         """Play sound effect for note hit"""
         try:
             if is_special:
-                sound_key = 'special'
+                self._sounds['special'].play()
             elif accuracy == HitAccuracy.PERFECT:
-                sound_key = 'perfect'
+                self._sounds['perfect'].play()
             elif accuracy == HitAccuracy.GOOD:
-                sound_key = 'good'
+                self._sounds['good'].play()
             else:
-                sound_key = 'miss'
-            
-            if sound_key in self._sounds:
-                self._sounds[sound_key].play()
+                self._sounds['miss'].play()
         except Exception as e:
-            print(f"Warning: Could not play sound effect: {e}")
+            print(f"Couldn't play sound: {e}")
+
     
     def set_music_volume(self, volume):
         """Set background music volume (0.0 to 1.0)"""
@@ -488,7 +477,20 @@ class RhythmGame:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("OOP Rhythm Game - 4 Pillars Demo")
+        
         self.audio_manager = AudioManager()
+        self.audio_manager.set_sfx_volume(0.7)
+
+        try:
+            self.audio_manager = AudioManager()
+            # Ensure volumes are set
+            self.audio_manager.set_sfx_volume(0.7)
+            self.audio_manager.set_music_volume(0.5)
+        except Exception as e:
+            print(f"Audio initialization error: {e}")
+            # Create minimal audio fallback
+            self.audio_manager = None
+
         try:
             self.audio_manager.load_background_music("background_music.wav")
             self.audio_manager.set_music_volume(0.5)  # 50% volume
@@ -565,6 +567,7 @@ class RhythmGame:
                         if not hasattr(note, '_hit_registered'):
                             accuracy = note.calculate_accuracy(distance)
                             self.score_manager.add_hit(accuracy, note.score_value)
+                            self.audio_manager.play_hit_sound(accuracy)  # Play sound for hold notes too
                             self.show_feedback(accuracy.value, self.get_accuracy_color(accuracy))
                             note._hit_registered = True
                 else:
@@ -684,5 +687,15 @@ class RhythmGame:
 # Run the game
 if __name__ == "__main__":
     game = RhythmGame()
+
+    if game.audio_manager:
+        game.audio_manager.play_hit_sound(HitAccuracy.PERFECT)
+        pygame.time.delay(300)
+        game.audio_manager.play_hit_sound(HitAccuracy.GOOD)
+        pygame.time.delay(300)
+        game.audio_manager.play_hit_sound(HitAccuracy.MISS)
+        pygame.time.delay(300)
+        game.audio_manager.play_hit_sound(HitAccuracy.PERFECT, True)
+
+
     game.run()
-    
