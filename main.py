@@ -74,3 +74,27 @@ class Drawable(ABC):
     def render(self, screen):
         pass
 
+# INHERITANCE: Base Note class
+class Note(GameObject):
+    """Base class for all notes - demonstrates inheritance"""
+    def __init__(self, lane, y=-20):
+        super().__init__(lane * 150 + 100, y)  # INHERITANCE: Call parent constructor
+        self._lane = lane  # ENCAPSULATION: Private attribute
+        self._width = 80
+        self._height = 20
+        self._speed = 4
+        self._hit = False
+        self._color = (255, 255, 255)
+        
+    @property
+    def lane(self):  # ENCAPSULATION: Getter method
+        return self._lane
+    
+    @property
+    def hit(self):
+        return self._hit
+    
+    @hit.setter
+    def hit(self, value):
+        self._hit = value
+
