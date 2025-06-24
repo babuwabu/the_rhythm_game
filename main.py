@@ -213,3 +213,31 @@ class SpecialNote(Note):
                            (self.x - self._width//2, self.y, self._width, self._height), 2)
             
 
+# POLYMORPHISM: Factory pattern for creating different note types
+class NoteFactory:
+    """Factory class for creating notes - demonstrates polymorphism"""
+    
+    @staticmethod
+    def create_note(note_type: NoteType, lane: int, y: int = -20) -> Note:
+        """POLYMORPHISM: Returns different note types through same interface"""
+        if note_type == NoteType.NORMAL:
+            return NormalNote(lane, y)
+        elif note_type == NoteType.HOLD:
+            return HoldNote(lane, y)
+        elif note_type == NoteType.SPECIAL:
+            return SpecialNote(lane, y)
+        else:
+            return NormalNote(lane, y)  # Default case
+    
+    @staticmethod
+    def create_random_note(lane: int, y: int = -20) -> Note:
+        """Create a random note type"""
+        # Weight the probability: 70% normal, 20% hold, 10% special
+        rand = random.random()
+        if rand < 0.7:
+            return NoteFactory.create_note(NoteType.NORMAL, lane, y)
+        elif rand < 0.9:
+            return NoteFactory.create_note(NoteType.HOLD, lane, y)
+        else:
+            return NoteFactory.create_note(NoteType.SPECIAL, lane, y)
+        
