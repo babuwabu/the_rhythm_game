@@ -422,3 +422,19 @@ class RhythmGame:
                         note.hit = True
                         break
 
+    def get_accuracy_color(self, accuracy):
+        """Get color for accuracy feedback"""
+        if accuracy == HitAccuracy.PERFECT:
+            return GREEN
+        elif accuracy == HitAccuracy.GOOD:
+            return YELLOW
+        else:
+            return RED
+    
+    def show_feedback(self, text, color):
+        """Show feedback text"""
+        self.feedback_text = text
+        self.feedback_color = color
+        self.feedback_timer = 60  # Show for 1 second at 60 FPS              
+
+      
