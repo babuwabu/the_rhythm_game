@@ -333,3 +333,33 @@ class KeyboardInputHandler(InputHandler):
         
         return pressed_lanes, held_lanes
     
+
+# Main Game Class
+class RhythmGame:
+    """Main game class demonstrating all OOP principles"""
+    def __init__(self):
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("OOP Rhythm Game - 4 Pillars Demo")
+        self.clock = pygame.time.Clock()
+        
+        # COMPOSITION: Game contains other objects
+        self.notes = []
+        self.score_manager = ScoreManager()  # ENCAPSULATION
+        self.input_handler = KeyboardInputHandler()  # POLYMORPHISM
+        
+        # Game settings
+        self.hit_zone_y = SCREEN_HEIGHT - 100
+        self.last_note_time = 0
+        self.note_interval = 800  # milliseconds
+        
+        # UI
+        self.font = pygame.font.Font(None, 36)
+        self.small_font = pygame.font.Font(None, 24)
+        
+        # Feedback
+        self.feedback_text = ""
+        self.feedback_timer = 0
+        self.feedback_color = WHITE
+        
+        self.running = True
+
