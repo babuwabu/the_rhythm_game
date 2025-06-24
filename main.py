@@ -126,3 +126,16 @@ class Note(GameObject):
         else:
             return HitAccuracy.MISS
         
+
+# INHERITANCE: Specialized note types inherit from Note
+class NormalNote(Note):
+    """Normal note - basic implementation"""
+    def __init__(self, lane, y=-20):
+        super().__init__(lane, y)
+        self._color = (100, 150, 255)
+        self._score_value = 100
+    
+    @property
+    def score_value(self):
+        return self._score_value
+    
