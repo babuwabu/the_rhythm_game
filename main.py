@@ -288,3 +288,11 @@ class ScoreManager:
         else:
             self.__combo = 0
 
+    def get_accuracy_percentage(self):
+        """Calculate overall accuracy percentage"""
+        total_hits = sum(self.__hits.values())
+        if total_hits == 0:
+            return 0
+        successful_hits = self.__hits[HitAccuracy.PERFECT] + self.__hits[HitAccuracy.GOOD]
+        return (successful_hits / total_hits) * 100
+
