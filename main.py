@@ -261,10 +261,10 @@ class AudioManager:
 
         try:
             try:
-                self._sounds['perfect'] = pygame.mixer.Sound("perfect_hit.wav")
-                self._sounds['good'] = pygame.mixer.Sound("good_hit.wav")
-                self._sounds['miss'] = pygame.mixer.Sound("miss_sound.wav")
-                self._sounds['special'] = pygame.mixer.Sound("special_hit.wav")
+                self._sounds['perfect'] = pygame.mixer.Sound("perfect.wav")
+                self._sounds['good'] = pygame.mixer.Sound("good.wav")
+                self._sounds['miss'] = pygame.mixer.Sound("miss.wav")
+                self._sounds['special'] = pygame.mixer.Sound("special.mp3")
                 print("Loaded WAV sound files successfully!")
             except:
                 # If files don't exist, generate synthetic sounds
@@ -317,7 +317,7 @@ class AudioManager:
         
         return arr.tobytes()
 
-    def values(self):
+    def set_volume(self):
         sound.set_volume(self._sfx_volume)
 
     def _create_hit_sounds(self):
@@ -381,7 +381,8 @@ class AudioManager:
     def set_sfx_volume(self, volume):
         """Set sound effects volume (0.0 to 1.0)"""
         self._sfx_volume = max(0.0, min(1.0, volume))
-        for sound in self._sounds.values():
+
+        for sound in self.values():
             sound.set_volume(self._sfx_volume)
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
