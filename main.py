@@ -296,3 +296,11 @@ class ScoreManager:
         successful_hits = self.__hits[HitAccuracy.PERFECT] + self.__hits[HitAccuracy.GOOD]
         return (successful_hits / total_hits) * 100
 
+ 
+# POLYMORPHISM: Different input handlers
+class InputHandler(ABC):
+    """Abstract base class for input handling"""
+    @abstractmethod
+    def handle_input(self, events, keys_pressed):
+        pass
+
