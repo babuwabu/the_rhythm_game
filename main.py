@@ -255,13 +255,27 @@ class AudioManager:
     
     def _load_sounds(self):
         """Load all sound effects"""
+    try:
         try:
-            # Create simple sound effects using pygame's built-in sound generation
-            # In a real game, you'd load actual sound files here
+            self._sounds['perfect'] = pygame.mixer.Sound("perfect_hit.wav")
+            self._sounds['good'] = pygame.mixer.Sound("good_hit.wav")
+            self._sounds['miss'] = pygame.mixer.Sound("miss_sound.wav")
+            self._sounds['special'] = pygame.mixer.Sound("special_hit.wav")
+            print("Loaded WAV sound files successfully!")
+        except:
+            # If files don't exist, generate synthetic sounds
+            print("Sound files not found - generating synthetic sounds")
             self._create_hit_sounds()
-            print("Sound effects loaded successfully!")
-        except Exception as e:
-            print(f"Warning: Could not load sound effects: {e}")
+            
+    except Exception as e:
+        print(f"Sound initialization failed: {e}")
+        # Create super basic fallback
+        self._sounds = {
+            'perfect': pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1)),
+            'good': pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1)),
+            'miss': pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2)),
+            'special': pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
+        }
 
     def _create_hit_sounds(self):
         """Create simple hit sound effects"""
@@ -474,6 +488,13 @@ class RhythmGame:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("OOP Rhythm Game - 4 Pillars Demo")
+        self.audio_manager = AudioManager()
+        try:
+            self.audio_manager.load_background_music("background_music.wav")
+            self.audio_manager.set_music_volume(0.5)  # 50% volume
+            self.audio_manager.play_background_music(loops=-1)  # -1 = infinite loop
+        except Exception as e:
+            print(f"Background music error: {e}")
         self.clock = pygame.time.Clock()
         
         # COMPOSITION: Game contains other objects
@@ -552,6 +573,7 @@ class RhythmGame:
                         accuracy = note.calculate_accuracy(distance)
                         # POLYMORPHISM: Different note types have different score values
                         self.score_manager.add_hit(accuracy, note.score_value)
+                        self.audio_manager.play_hit_sound(accuracy, isinstance(note, SpecialNote))
                         self.show_feedback(accuracy.value, self.get_accuracy_color(accuracy))
                         note.hit = True
                         break
