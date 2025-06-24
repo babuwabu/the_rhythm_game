@@ -304,3 +304,32 @@ class InputHandler(ABC):
     def handle_input(self, events, keys_pressed):
         pass
 
+class KeyboardInputHandler(InputHandler):
+    """Keyboard input handler"""
+    def __init__(self):
+        self.lane_keys = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
+        self.key_states = [False] * 4
+    
+    def handle_input(self, events, keys_pressed):
+        """Handle keyboard input"""
+        pressed_lanes = []
+        held_lanes = []
+        
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                for i, key in enumerate(self.lane_keys):
+                    if event.key == key:
+                        pressed_lanes.append(i)
+                        self.key_states[i] = True
+            elif event.type == pygame.KEYUP:
+                for i, key in enumerate(self.lane_keys):
+                    if event.key == key:
+                        self.key_states[i] = False
+        
+        # Check for held keys
+        for i, held in enumerate(self.key_states):
+            if held:
+                held_lanes.append(i)
+        
+        return pressed_lanes, held_lanes
+    
