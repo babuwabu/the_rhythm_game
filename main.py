@@ -67,3 +67,10 @@ class GameObject(ABC):
     def draw(self, screen):
         """Abstract method for drawing the object"""
         pass
+
+class Drawable(ABC):
+    """Abstract interface for drawable objects"""
+    @abstractmethod
+    def render(self, screen):
+        pass
+
