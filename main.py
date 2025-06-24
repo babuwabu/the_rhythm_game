@@ -98,3 +98,31 @@ class Note(GameObject):
     def hit(self, value):
         self._hit = value
 
+    def update(self):
+        """Update note position"""
+        self.y += self._speed
+    
+    def draw(self, screen):
+        """Draw the note"""
+        if not self._hit:
+            pygame.draw.rect(screen, self._color, 
+                           (self.x - self._width//2, self.y, self._width, self._height))
+            pygame.draw.rect(screen, BLACK, 
+                           (self.x - self._width//2, self.y, self._width, self._height), 2)
+    
+    def is_off_screen(self):
+        return self.y > SCREEN_HEIGHT
+    
+    def get_hit_zone_distance(self, hit_zone_y):
+        """Calculate distance from hit zone"""
+        return abs(self.y + self._height//2 - hit_zone_y)
+    
+    def calculate_accuracy(self, distance):
+        """Calculate hit accuracy based on distance"""
+        if distance <= 15:
+            return HitAccuracy.PERFECT
+        elif distance <= 30:
+            return HitAccuracy.GOOD
+        else:
+            return HitAccuracy.MISS
+        
