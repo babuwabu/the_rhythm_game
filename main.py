@@ -348,7 +348,33 @@ class AudioManager:
         """Stop background music"""
         pygame.mixer.music.stop()
 
+    def play_hit_sound(self, accuracy: HitAccuracy, is_special=False):
+        """Play sound effect for note hit"""
+        try:
+            if is_special:
+                sound_key = 'special'
+            elif accuracy == HitAccuracy.PERFECT:
+                sound_key = 'perfect'
+            elif accuracy == HitAccuracy.GOOD:
+                sound_key = 'good'
+            else:
+                sound_key = 'miss'
+            
+            if sound_key in self._sounds:
+                self._sounds[sound_key].play()
+        except Exception as e:
+            print(f"Warning: Could not play sound effect: {e}")
     
+    def set_music_volume(self, volume):
+        """Set background music volume (0.0 to 1.0)"""
+        self._music_volume = max(0.0, min(1.0, volume))
+        pygame.mixer.music.set_volume(self._music_volume)
+    
+    def set_sfx_volume(self, volume):
+        """Set sound effects volume (0.0 to 1.0)"""
+        self._sfx_volume = max(0.0, min(1.0, volume))
+        for sound in self._sounds.values():
+            sound.set_volume(self._sfx_volume)
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
 class ScoreManager:
