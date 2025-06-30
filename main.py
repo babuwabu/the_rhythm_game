@@ -24,7 +24,6 @@ YELLOW = (255, 255, 0)
 PURPLE = (255, 0, 255)
 ORANGE = (255, 165, 0)
 
-
 class HitAccuracy(Enum):
     PERFECT = "PERFECT"
     GOOD = "GOOD"
@@ -34,7 +33,6 @@ class NoteType(Enum):
     NORMAL = "NORMAL"
     HOLD = "HOLD"
     SPECIAL = "SPECIAL"
-
 
 # ABSTRACTION: Abstract base classes define interfaces
 class GameObject(ABC):
@@ -256,33 +254,17 @@ class AudioManager:
     
     def _load_sounds(self):
         """Load all sound effects"""
-   
-    def _sounds(self):
-
         try:
-            try:
-                self._sounds['perfect'] = pygame.mixer.Sound("perfect.wav")
-                self._sounds['good'] = pygame.mixer.Sound("good.wav")
-                self._sounds['miss'] = pygame.mixer.Sound("miss.wav")
-                self._sounds['special'] = pygame.mixer.Sound("special.mp3")
-                print("Loaded WAV sound files successfully!")
-            except:
-                # If files don't exist, generate synthetic sounds
-                print("Sound files not found - generating synthetic sounds")
-                self._create_hit_sounds()
-            
-        except Exception as e:
-            print(f"Sound initialization failed: {e}")
-        # Create super basic fallback
+            self._sounds['perfect'] = pygame.mixer.Sound("perfect.wav")
+            self._sounds['good'] = pygame.mixer.Sound("good.wav")
+            self._sounds['miss'] = pygame.mixer.Sound("miss.wav")
+            self._sounds['special'] = pygame.mixer.Sound("special.mp3")
+            print("Loaded WAV sound files successfully!")
+        except:
+            # If files don't exist, generate synthetic sounds
+            print("Sound files not found - generating synthetic sounds")
+            self._create_hit_sounds()
     
-    def _generate_beep(self, frequency, duration):
-        self._sounds = {
-            'perfect': pygame.mixer.Sound(buffer=self._generate_beep(880, 0.1)),
-            'good': pygame.mixer.Sound(buffer=self._generate_beep(440, 0.1)),
-            'miss': pygame.mixer.Sound(buffer=self._generate_beep(220, 0.2)),
-            'special': pygame.mixer.Sound(buffer=self._generate_chord([523, 659, 784], 0.2))
-        }
-
     def _generate_beep(self, frequency, duration):
         """Generate a simple beep sound"""
         sample_rate = 44100
@@ -318,7 +300,8 @@ class AudioManager:
         return arr.tobytes()
 
     def set_volume(self):
-        sound.set_volume(self._sfx_volume)
+        for sound in self._sounds.values():
+            sound.set_volume(self._sfx_volume)
 
     def _create_hit_sounds(self):
         """Create simple hit sound effects"""
@@ -372,7 +355,6 @@ class AudioManager:
         except Exception as e:
             print(f"Couldn't play sound: {e}")
 
-    
     def set_music_volume(self, volume):
         """Set background music volume (0.0 to 1.0)"""
         self._music_volume = max(0.0, min(1.0, volume))
@@ -381,8 +363,7 @@ class AudioManager:
     def set_sfx_volume(self, volume):
         """Set sound effects volume (0.0 to 1.0)"""
         self._sfx_volume = max(0.0, min(1.0, volume))
-
-        for sound in self.values():
+        for sound in self._sounds.values():    # <--- Fixed line
             sound.set_volume(self._sfx_volume)
 
 # ENCAPSULATION: ScoreManager encapsulates scoring logic
@@ -658,7 +639,6 @@ class RhythmGame:
             stats_text = self.small_font.render(f"{accuracy.value}: {count}", True, color)
             self.screen.blit(stats_text, (10, stats_y))
             stats_y += 25
-        
         # Controls
         controls = ["Controls:", "D F J K", "Hold for long notes"]
         for i, text in enumerate(controls):
@@ -703,6 +683,5 @@ if __name__ == "__main__":
         game.audio_manager.play_hit_sound(HitAccuracy.MISS)
         pygame.time.delay(300)
         game.audio_manager.play_hit_sound(HitAccuracy.PERFECT, True)
-
 
     game.run()
